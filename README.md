@@ -8,4 +8,5 @@ A list of file names, with this syntax, without extension:
 
 # Run
 move in the folder
-./phygentree.sh edsfile1 edsfile2 [...]# phygentree
+
+./phygentree.sh edsfile1 edsfile2 [...]
