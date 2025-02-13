@@ -9,8 +9,6 @@ OUTPUT3="phygentree"
 #salvataggio di tutti i filename in un array
 file_array=("$@")
 
-#funzione che crea il bitvector della collezione di EDS e salva le dimensioni delle stringhe
-
 #funzione che fa fasta e i bv di ogni eds (vedere se si può fare un ciclo)
 for file in "${file_array[@]}"; do
     echo "Processo il file: $file"
@@ -23,6 +21,9 @@ done
 #bwt del fasta concatenato
 $GSUFPATH/gsufsort $OUTPUT1.fasta --da --bwt --output $OUTPUT1
 #rm $OUTPUT1.fasta 
+
+#funzione che calcola il gda leggendo il da
+#./compute_gda $OUTPUT1
 
 #funzione che calcola la distanza fra le eds sulla bwt
 #./compute_distance_bwt $OUTPUT1 $OUTPUT2
