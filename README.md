@@ -4,6 +4,19 @@ A list of file names, with this syntax, without extension:
 
 # Output files
 
+Gsufsort output:
+- Document array (.da)
+- .bwt
+
+EDS-BWT output:
+- Bitvector (.bitvector)
+- (FASTA (.fasta))
+- .info
+
+phygentree output: 
+- 
+
+
 # Compile
 
 # Run
