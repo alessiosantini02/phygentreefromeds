@@ -23,6 +23,8 @@
 #include <sdsl/bit_vectors.hpp>
 #include "EDS-BWT/malloc_count/malloc_count.h"
 
+#include "gda_element.hpp" //struttura che gestisce il gda come coppia
+
 // This function takes the position i of a dollar and the associated rank and select support (for 1) rb_1 and bsel_1
 // of a compressed bitvector, computes the indexes of the dollars belonging to the starting and ending words
 // of the segment on its left, and lastly returns the POSITIONS in the BWT of the characters
