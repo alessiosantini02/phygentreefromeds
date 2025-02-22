@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int binary_search_eds(int string_index_da, const vector<int>& eds_sizes);
+int binary_search_eds_index(int string_index_da, const vector<int>& eds_sizes);
 
 int main(int argc, char *argv[]){
     //apertura file con le dimensioni scritte
@@ -20,12 +20,9 @@ int main(int argc, char *argv[]){
     {
         if (eds_sizes.size()==0)
         {
-            int inserimento = temp;
-            //cout <<inserimento;
-            eds_sizes.push_back(inserimento);
+            eds_sizes.push_back(temp);
         }else{
-            int inserimento =temp+eds_sizes[eds_sizes.size()-1];
-            //cout <<inserimento;
+            int inserimento = temp+eds_sizes[eds_sizes.size()-1];
             eds_sizes.push_back(inserimento);
         }
     }
@@ -45,7 +42,7 @@ int main(int argc, char *argv[]){
         gda_element temp;
         
         //calcolo della coppia GDA per ogni elemento di DA
-        temp.eds_index = binary_search_eds(buffer, eds_sizes);
+        temp.eds_index = binary_search_eds_index(buffer, eds_sizes);
         if (temp.eds_index == 0)
         {
             temp.dollar_index = buffer;
@@ -60,17 +57,26 @@ int main(int argc, char *argv[]){
     fclose(da);
     
     //salvataggio del gda in un nuovo file
+    string gda_filename = argv[1];
+    FILE *gda_file = fopen((gda_filename+"_gda.bin").c_str(), "wb");
+    
+    size_t written = fwrite(gda.data(), sizeof(gda_element), gda.size(), gda_file);
+    if (written != gda.size()) {
+        perror("Errore nella scrittura del file GDA");
+    }
+    fclose(gda_file); 
+
     return 0;
 }
 
-int binary_search_eds(int string_index_da, const vector<int>& eds_sizes) {
+int binary_search_eds_index(int string_index_da, const vector<int>& eds_sizes) {
     int left = 0, right = eds_sizes.size() - 1;
     
     while (left <= right)
     {
         int middle = (left+right)/2;
 
-        if (string_index_da <= eds_sizes[middle])
+        if (string_index_da < eds_sizes[middle])
         {
             if (middle == 0 || string_index_da >= eds_sizes[middle-1])
             {
