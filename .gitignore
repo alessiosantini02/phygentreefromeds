@@ -2,7 +2,7 @@
 EDS-BWT/
 compute_gda
 fasta_bv_concat
-compute_distance
+compute_distance_bwt
 conc_file_gda.bin
 conc_file.4.da
 conc_file.bitvector
