@@ -68,7 +68,7 @@ int main(int argc, char *argv[]){
 
     //salvataggio del numero di eds in un file ausiliario
     FILE *eds_number = fopen("eds_number.aux", "wb");    
-    int gda_size = eds_sizes.size();
+    int gda_size = gda.size();
     fwrite(&gda_size, sizeof(int), 1, eds_number);
     fclose(eds_number);
     return 0;
