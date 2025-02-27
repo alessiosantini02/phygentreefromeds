@@ -64,8 +64,13 @@ int main(int argc, char *argv[]){
     if (written != gda.size()) {
         perror("Errore nella scrittura del file GDA");
     }
-    fclose(gda_file); 
+    fclose(gda_file);
 
+    //salvataggio del numero di eds in un file ausiliario
+    FILE *eds_number = fopen("eds_number.aux", "wb");    
+    int gda_size = eds_sizes.size();
+    fwrite(&gda_size, sizeof(int), 1, eds_number);
+    fclose(eds_number);
     return 0;
 }
 
