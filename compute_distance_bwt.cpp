@@ -1,25 +1,100 @@
-/*
+#include <iostream>
+#include <fstream>
+#include <vector>
 
-// Apertura file in lettura
-FILE *gda_file = fopen("gda_output.bin", "rb");
-vector<gda_element> gda_read(gda.size());  // Allocazione spazio
+#include "gda_element.hpp"
 
-// Lettura del file
-fread(gda_read.data(), sizeof(gda_element), gda.size(), gda_file);
-fclose(gda_file);
+using namespace std;
 
-// Stampa per verifica
-for (const auto &elem : gda_read) {
-    printf("EDS: %d, Dollaro: %d\n", elem.eds_index, elem.dollar_index);
+int main(int argc, char* argv[]){
+    
+    //apertura file GDA
+    string gdafilename = argv[1];
+    FILE *gda_file = fopen((gdafilename+"_gda.bin").c_str(), "rb");
+
+    //lettura del numero di EDS da un file ausiliario
+    FILE *eds_number_file = fopen("eds_number.aux", "rb");
+    int eds_number; //lettura da un file ausiliario in cui ho scritto la dimensione dell'array in compute_gda da eliminare dopo questa funzione
+    fread(&eds_number, sizeof(int), 1, eds_number_file);
+    fclose(eds_number_file);
+
+    //inzializzazione matrice distanze
+    vector<vector<double>> distance_matrix(eds_number, vector<double>(eds_number));
+
+    //scorrimento del GDA per calcolare le distanze a due a due fra le EDS
+    for (size_t i = 0; i < eds_number; i++)
+    {
+        int j;
+        for (j = 0; j < eds_number; j++)
+        {
+            int current_run_counter=1; //contatore per la lunghezza del run attuale, inizializzato a 1 così alla prima iterazione viene aggiunto al contatore 1-1=0
+            int current_string=0; //0 solo all'inizio, 1 se sta contando un run della stringa i, 2 se j
+            
+            int eds_index_temp;
+            while (fread(&eds_index_temp, sizeof(int), 1, gda_file) > 0)
+            {
+                //lettura di un altro elemento per buttarlo via perchè il GDA è memorizzato come sequenza di interi in binario, non è strutturato a coppie
+                int bin;
+                fread(&bin, sizeof(int), 1, gda_file);
+
+                //controllo il valore del GDA per controllare se fa parte del run corrente o inizia un nuovo run
+                if (eds_index_temp == i)
+                {
+                    if (current_string != 1)
+                    {
+                        distance_matrix[i][j] += current_run_counter-1;
+                        current_string = 1;
+                        current_run_counter = 1;
+                    }else
+                    {
+                        current_run_counter++;
+                    }
+                }else if (eds_index_temp == j)
+                {
+                    if (current_string != 2)
+                    {
+                        distance_matrix[i][j] += current_run_counter-1;
+                        current_string = 2;
+                        current_run_counter = 1;
+                    }else
+                    {
+                        current_run_counter++;
+                    }
+                }
+            }
+
+            rewind(gda_file);
+
+        }
+    }
+
+    fclose(gda_file);
+
+    for (size_t i = 0; i < distance_matrix.size(); i++)
+    {
+        for (size_t j = 0; j < distance_matrix.size(); j++)
+        {
+            cout << distance_matrix[i][j];
+            cout << " ";
+        }
+        cout << "\n";
+    }
+    
+
+    //salvataggio della matrice in phylip per il momento, poi aggiungere opzione per csv
+    string name_distance_matrix_file = argv[2];
+    ofstream phylip_file((name_distance_matrix_file+".phy").c_str());
+    phylip_file << distance_matrix.size() << "\n"; // Numero di elementi
+
+    for (size_t i = 0; i < distance_matrix.size(); i++) {
+        phylip_file << "E" << i << "  "; // Nome fittizio del nodo
+        for (double d : distance_matrix[i]) {
+            phylip_file << d << "  ";
+        }
+        phylip_file << "\n";
+    }
+
+    phylip_file.close();
+    
+    return 0;
 }
-*/
-
-/*
-- aprire la bwt e caricarla in un array di char
-- aprire il gda e caricarlo in un array di gda_element
-- fare un ciclo for annidato che:
-    - carica in un altro array di char gli elementi appartenenti a due stringhe
-    - conta le alternanze di colori
-    - salva il valore in una matrice
-- salva la matrice in un file (vedere formato, forse phylip che è lo standard in bionformatica)
-*/
