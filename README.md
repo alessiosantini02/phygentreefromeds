@@ -33,10 +33,13 @@ make TERMINATOR=0 DNA=1
 cd ..
 ```
 
-- compile EDS-BWT
+- compile EDS-BWT:
 ```
 make
 ```
+
+- compile phygentree:
+
 # Run
 move in the folder
 
