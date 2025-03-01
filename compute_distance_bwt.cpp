@@ -84,10 +84,10 @@ int main(int argc, char* argv[]){
     //salvataggio della matrice in phylip per il momento, poi aggiungere opzione per csv
     string name_distance_matrix_file = argv[2];
     ofstream phylip_file((name_distance_matrix_file+".phy").c_str());
-    phylip_file << distance_matrix.size() << "\n"; // Numero di elementi
+    phylip_file << distance_matrix.size() << "\n"; //numero di elementi
 
     for (size_t i = 0; i < distance_matrix.size(); i++) {
-        phylip_file << "E" << i << "  "; // Nome fittizio del nodo
+        phylip_file << "E" << i << "  ";
         for (double d : distance_matrix[i]) {
             phylip_file << d << "  ";
         }
