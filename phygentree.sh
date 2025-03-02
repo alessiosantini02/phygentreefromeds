@@ -8,7 +8,7 @@ OUTPUT3="phygentree"
 
 #salvataggio di tutti i filename in un array
 #file_array=("$@")
-file_array=("test/edsarticolo" "test/test")
+file_array=("test/edsarticolo" "test/test" "test/test2")
 
 #funzione che fa fasta e i bv di ogni eds
 for file in "${file_array[@]}"; do

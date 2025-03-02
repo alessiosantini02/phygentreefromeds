@@ -10,8 +10,8 @@ int binary_search_eds_index(int string_index_da, const vector<int>& eds_sizes);
 
 int main(int argc, char *argv[]){
     //apertura file con le dimensioni scritte
-    string sizes_filename=argv[1];
-    FILE *sizes = fopen((sizes_filename+".bitvector.bin").c_str(), "rb");
+    string filename=argv[1];
+    FILE *sizes = fopen((filename+".bitvector.bin").c_str(), "rb");
     
     //scorrimento del file e salvataggio degli interi in un array
     vector<int> eds_sizes;
@@ -32,8 +32,7 @@ int main(int argc, char *argv[]){
     vector<gda_element> gda;
     
     //apertura del file del DA
-    string da_filename = argv[1];
-    FILE *da = fopen((da_filename+".4.da").c_str(), "rb");
+    FILE *da = fopen((filename+".4.da").c_str(), "rb");
     
     //scorrimento del file del da leggendo gli elementi e calcolando direttamente il gda
     int buffer;
@@ -57,8 +56,7 @@ int main(int argc, char *argv[]){
     fclose(da);
     
     //salvataggio del gda in un nuovo file
-    string gda_filename = argv[1];
-    FILE *gda_file = fopen((gda_filename+"_gda.bin").c_str(), "wb");
+    FILE *gda_file = fopen((filename+"_gda.bin").c_str(), "wb");
     
     size_t written = fwrite(gda.data(), sizeof(gda_element), gda.size(), gda_file);
     if (written != gda.size()) {
