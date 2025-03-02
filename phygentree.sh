@@ -6,9 +6,8 @@ OUTPUT1="conc_file"
 OUTPUT2="distance_matrix"
 OUTPUT3="phygentree"
 
-#salvataggio di tutti i filename in un array
-#file_array=("$@")
-file_array=("test/edsarticolo" "test/test" "test/test2")
+#salvataggio di tutti i filename passati come parametro in un array
+file_array=("$@")
 
 #funzione che fa fasta e i bv di ogni eds
 for file in "${file_array[@]}"; do
