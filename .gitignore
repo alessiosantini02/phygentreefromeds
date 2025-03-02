@@ -6,6 +6,7 @@ compute_gda
 fasta_bv_concat
 compute_distance_bwt
 
+test/edsarticolo.bitvector
 test/edsarticolo.empty.info
 test/edsarticolo.fasta
 test/test.bitvector
