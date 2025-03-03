@@ -1,6 +1,8 @@
 .vscode/
 
 EDS-BWT/
+rapidnj 
+#probabilmente va bene tenerci rapidnj, ma valutare
 
 compute_gda
 fasta_bv_concat
@@ -15,6 +17,7 @@ test/test.fasta
 test/test2.bitvector
 test/test2.empty.info
 test/test2.fasta
+test/outputphygentree.txt
 
 conc_file_gda.bin
 conc_file.4.da
