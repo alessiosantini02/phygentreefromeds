@@ -88,7 +88,7 @@ int binary_search_eds_index(int string_index_da, const vector<int>& eds_sizes) {
                 return middle;
             }else
             {
-                right=middle;
+                right=middle-1;
             }            
         }else
         {
@@ -98,7 +98,7 @@ int binary_search_eds_index(int string_index_da, const vector<int>& eds_sizes) {
                 return middle+1; 
             }else
             {
-                left = middle;
+                left = middle+1;
             }
         }
     }

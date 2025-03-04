@@ -4,6 +4,8 @@ EDS-BWT/
 rapidnj 
 #probabilmente va bene tenerci rapidnj, ma valutare
 
+covid/
+
 compute_gda
 fasta_bv_concat
 compute_distance_bwt
