@@ -32,3 +32,4 @@ rm eds_number.aux
 
 #funzione che costruisce l'albero filogenetico in base alla matrice distanze (nome funzione non definitivo)
 #./neighbour_join $OUTPUT2 $OUTPUT3
+./rapidnj $OUTPUT2.phy > $OUTPUT3.txt
