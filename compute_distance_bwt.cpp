@@ -72,12 +72,15 @@ int main(int argc, char* argv[]){
                     }
                 }
 
-                distance_matrix[i][j] += current_run_counter-1;// conteggio dell'ultimo run del gda
+                rewind(gda_file);
+
+                if (eds_index_temp == i || eds_index_temp == j)
+                {
+                    distance_matrix[i][j] += current_run_counter-1;// conteggio dell'ultimo run del gda
+                }
 
                 distance_matrix[i][j] = distance_matrix[i][j] / symbols_number; //normalizzazione per la somma
                 distance_matrix[j][i] = distance_matrix[i][j]; //per completare la matrice che è simmetrica
-                
-                rewind(gda_file);
             }
         }
     }
@@ -88,10 +91,9 @@ int main(int argc, char* argv[]){
     {
         for (size_t j = 0; j < distance_matrix.size(); j++)
         {
-            cout << distance_matrix[i][j];
-            cout << " ";
+            cout << distance_matrix[i][j]<< " ";
         }
-        cout << "\n";
+        cout << endl;
     }
     
 

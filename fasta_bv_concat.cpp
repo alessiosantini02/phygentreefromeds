@@ -58,17 +58,22 @@ void bv_concat(const string& concatbv, string edsfilenames[], int filenumber){
     vector<int> eds_sizes(filenumber);
     for (int i = 0; i < filenumber; i++)
     {
-        char buffer[1024];
+        int buffer;
         size_t bytes;
         FILE *src=fopen((edsfilenames[i]+".bitvector").c_str(), "rb");
-        while ((bytes = fread(buffer, 1, sizeof(buffer), src)) > 0) {
-            fwrite(buffer, 1, bytes, destinationfile);
-            if (eds_sizes[i] == 0) //la dimensione è nel primo byte del bitvector, quindi ce lo scrivo e poi dopo non verrà modificato
-            {
-                eds_sizes[i]=buffer[0];
-            }
+        if (fread(&buffer, sizeof(int), 1, src) == 1) {
+            cout << "Dimensione letta: "<<buffer<<endl;
+            fwrite(&buffer, sizeof(int), 1, destinationfile);
+            //if (eds_sizes[i] == 0) //la dimensione è nel primo byte del bitvector, quindi ce lo scrivo e poi dopo non verrà modificato
+            //{
+                eds_sizes[i]=buffer;
+            //}
             
+        }else
+        {
+            cout << "Errore"<<endl;
         }
+        
         fclose(src);
     }
 

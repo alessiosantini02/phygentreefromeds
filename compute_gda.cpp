@@ -57,7 +57,6 @@ int main(int argc, char *argv[]){
     
     //salvataggio del gda in un nuovo file
     FILE *gda_file = fopen((filename+"_gda.bin").c_str(), "wb");
-    
     size_t written = fwrite(gda.data(), sizeof(gda_element), gda.size(), gda_file);
     if (written != gda.size()) {
         perror("Errore nella scrittura del file GDA");
@@ -84,7 +83,7 @@ int binary_search_eds_index(int string_index_da, const vector<int>& eds_sizes) {
             if (middle == 0 || string_index_da >= eds_sizes[middle-1])
             {
                 //se middle è la dimensione della prima stringa
-                //o se l'indice è compreso fra dimensione della middle-esima e della middle-1-esima
+                //o se l'indice è compreso fra dimensione della middle-1-esima e della middle-esima
                 return middle;
             }else
             {
@@ -92,9 +91,8 @@ int binary_search_eds_index(int string_index_da, const vector<int>& eds_sizes) {
             }            
         }else
         {
-            if (middle == eds_sizes.size()-1 || string_index_da <= eds_sizes[middle+1])
-            {
-                //se l'indice è compreso fra la middle-esima e la middle+1-esima dimensione
+            if (middle ==eds_sizes.size()-1 && string_index_da < eds_sizes[middle+1])
+            {                
                 return middle+1; 
             }else
             {
@@ -103,5 +101,5 @@ int binary_search_eds_index(int string_index_da, const vector<int>& eds_sizes) {
         }
     }
     
-    return -1;  //non trovato
+    return -100;  //non trovato
 }
