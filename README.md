@@ -53,3 +53,9 @@ move in phygentree folder and type the following command followed by the paths o
 ```
 ./phygentree.sh edsfile1 edsfile2 [...]
 ```
+If EDS files are not well formed or you are not sure about that, use the EDS-BWT function stringCheck like this:
+```
+cd EDS-BWT/
+./stringCheck input.eds output
+```
+It will correct the EDS file and will save it as output.eds
