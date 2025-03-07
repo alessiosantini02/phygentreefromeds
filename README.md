@@ -18,30 +18,37 @@ phygentree output:
 
 
 # Compile
-[mettere istruzioni di compilazione di gsufsort e di eds-bwt, e poi il comando make in questa cartella]
-- install EDS-BWT
+- download code or clone this repository and move in the created directory:
 ```
+git clone https://github.com/alessiosantini02/phygentree.git
+```
+- install EDS-BWT in phygentree directory:
+```
+cd phygentree/
 git clone --recursive https://github.com/giovannarosone/EDS-BWT.git 
-cd EDS-BWT
 ```
 
-- install and compile gsufsort:
+- install gsufsort in EDS-BWT directory and compile:
 ```
+cd EDS-BWT
 git clone https://github.com/felipelouza/gsufsort.git
 cd gsufsort
 make TERMINATOR=0 DNA=1
-cd ..
 ```
 
 - compile EDS-BWT:
 ```
+cd ..
 make
 ```
 
 - compile phygentree:
-
+```
+cd ..
+make
+```
 # Run
-move in the folder
+move in phygentree folder and type the following command followed by the paths of the EDS files (without extension)
 
 ```
 ./phygentree.sh edsfile1 edsfile2 [...]
