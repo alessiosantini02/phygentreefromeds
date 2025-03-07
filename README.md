@@ -47,6 +47,14 @@ make
 cd ..
 make
 ```
+
+- install rapidNJ (not necessarily in phygentree directory)
+```
+git clone https://github.com/somme89/rapidNJ.git
+cd rapidNJ-master
+make
+```
+and move the executable file from rapidNJ-master/bin to phygentree/
 # Run
 move in phygentree folder and type the following command followed by the paths of the EDS files (without extension)
 
