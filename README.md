@@ -1,27 +1,31 @@
 # Input Files
 A list of file names, with this syntax, without extension:
-    filename1 filename2 ...
+    filename1 filename2 [...]
 
 # Output files
 
 Gsufsort output:
-- Document array (.da)
-- .bwt
+- Document array (.da) associated to the BWT of the collection of EDSs;
+- file containing the BWT of the collection of EDSs (.bwt);
 
 EDS-BWT output:
-- Bitvector (.bitvector)
-- (FASTA (.fasta))
-- .info
+- a bitvector (.bitvector) for each EDS;
+- a FASTA (.fasta) for each EDS;
+- an information file about empty symbols (.info) for each EDS file;
 
 phygentree output: 
-- 
-
+- General Document Array (.bin) associated to the BWT of the collection of EDSs;
+- General Bitvector associated to the concatenation of the collection of EDSs;
+- matrix containing distances between EDSs (.phy);
+- phylogenetic tree of the EDSs (.txt)
 
 # Compile
+
 - download code or clone this repository and move in the created directory:
 ```
 git clone https://github.com/alessiosantini02/phygentree.git
 ```
+
 - install EDS-BWT in phygentree directory:
 ```
 cd phygentree/
@@ -55,7 +59,9 @@ cd rapidNJ-master
 make
 ```
 and move the executable file from rapidNJ-master/bin to phygentree/
+
 # Run
+
 move in phygentree folder and type the following command followed by the paths of the EDS files (without extension)
 
 ```
