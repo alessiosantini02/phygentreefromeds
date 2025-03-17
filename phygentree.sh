@@ -27,7 +27,7 @@ rm $OUTPUT1.fasta
 rm $OUTPUT1.bitvector.bin
 
 #funzione che calcola la distanza fra le eds sulla bwt
-./compute_distance_bwt $OUTPUT1 $OUTPUT2
+./compute_distance_gda_run $OUTPUT1 $OUTPUT2
 rm eds_number.aux
 
 #funzione che costruisce l'albero filogenetico in base alla matrice distanze (nome funzione non definitivo)

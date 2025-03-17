@@ -8,7 +8,7 @@ covid/
 
 compute_gda
 fasta_bv_concat
-compute_distance_bwt
+compute_distance_gda_run
 
 test/edsarticolo.bitvector
 test/edsarticolo.empty.info
