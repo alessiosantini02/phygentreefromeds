@@ -53,7 +53,7 @@ int main(int argc, char* argv[]){
                         {
                             gda_difference--;
                             symbols_counter++;
-                        }                        
+                        }
                     }else
                     {
                         distance_matrix[i][j]+=abs(gda_difference);
@@ -61,13 +61,26 @@ int main(int argc, char* argv[]){
                         previous_symbol=bwt_symbol_buffer;
                     }
                 }
+
+                //conteggio ultimo run
+                //guardo il valore del gda, se è i o j faccio +1 su un contatore cumulativo
+                if (gda_buffer == i)
+                {
+                    gda_difference++;
+                    symbols_counter++;
+                }else if (gda_buffer == j)
+                {
+                    gda_difference--;
+                    symbols_counter++;
+                }
+                distance_matrix[i][j]+=abs(gda_difference);
+                
+                //inserimento distanza fra EDS i e EDS j nella matrice
                 distance_matrix[i][j]/=symbols_counter;
                 distance_matrix[j][i]=distance_matrix[i][j];
                 
                 rewind(bwt_file);
-                rewind(gda_file);
-                symbols_counter=0;
-                
+                rewind(gda_file);                
             }
             
             
