@@ -9,6 +9,9 @@ covid/
 compute_gda
 fasta_bv_concat
 compute_distance_gda_run
+compute_distance_bwt_run
+
+preceding_dollars_finder_new.cpp
 
 test/edsarticolo.bitvector
 test/edsarticolo.empty.info
@@ -21,11 +24,4 @@ test/test2.empty.info
 test/test2.fasta
 test/outputphygentree.txt
 
-conc_file_gda.bin
-conc_file.4.da
-conc_file.bitvector
-conc_file.bitvector.bin
-conc_file.bwt
-eds_number.aux
-distance_matrix.phy
-phygentree.txt
+risultati/

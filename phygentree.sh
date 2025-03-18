@@ -2,9 +2,9 @@
 
 EDSBWTPATH="EDS-BWT"
 GSUFPATH="EDS-BWT/gsufsort"
-OUTPUT1="conc_file"
-OUTPUT2="distance_matrix"
-OUTPUT3="phygentree"
+OUTPUT1="risultati/conc_file"
+OUTPUT2="risultati/distance_matrix"
+OUTPUT3="risultati/phygentree"
 
 #salvataggio di tutti i filename passati come parametro in un array
 file_array=("$@")
@@ -27,9 +27,11 @@ rm $OUTPUT1.fasta
 rm $OUTPUT1.bitvector.bin
 
 #funzione che calcola la distanza fra le eds sulla bwt
-./compute_distance_gda_run $OUTPUT1 $OUTPUT2
+./compute_distance_gda_run $OUTPUT1 $OUTPUT2"_gda"
+./compute_distance_bwt_run $OUTPUT1 $OUTPUT2"_bwt"
 rm eds_number.aux
 
 #funzione che costruisce l'albero filogenetico in base alla matrice distanze (nome funzione non definitivo)
 #./neighbour_join $OUTPUT2 $OUTPUT3
-./rapidnj $OUTPUT2.phy > $OUTPUT3.txt
+./rapidnj $OUTPUT2"_gda".phy > $OUTPUT3"_fromgda".txt
+./rapidnj $OUTPUT2"_bwt".phy > $OUTPUT3"_frombwt".txt
