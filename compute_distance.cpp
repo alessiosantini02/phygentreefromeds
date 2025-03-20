@@ -115,8 +115,12 @@ int main(int argc, char* argv[]){
 
 
                     //DISTANZA SUI RUN DELLA BWT
+                    #if DOLLAR_INTO_PREVIOUS_RUN==1
+                    if (bwt_symbol_buffer == previous_symbol || bwt_symbol_buffer=='#')
+                    #else
                     if (bwt_symbol_buffer == previous_symbol)
-                    {
+                    #endif
+                    {                 
                         //guardo il valore del gda, se è i o j faccio +1 su un contatore cumulativo
                         if (gda_buffer == i)
                         {
@@ -192,7 +196,6 @@ int main(int argc, char* argv[]){
 }
 
 void print_distance_matrix(vector<vector<double>> distance_matrix){
-    
     for (size_t i = 0; i < distance_matrix.size(); i++)
     {
         for (size_t j = 0; j < distance_matrix.size(); j++)
