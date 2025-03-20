@@ -24,11 +24,12 @@ rm $OUTPUT1.fasta
 
 #funzione che calcola il gda leggendo il da
 ./compute_gda $OUTPUT1
-rm $OUTPUT1.bitvector.bin
 
 #funzione che calcola la distanza fra le eds sulla bwt
-./compute_distance_gda_run $OUTPUT1 $OUTPUT2"_gda"
-./compute_distance_bwt_run $OUTPUT1 $OUTPUT2"_bwt"
+#./compute_distance_gda_run $OUTPUT1 $OUTPUT2"_gda"
+#./compute_distance_bwt_run $OUTPUT1 $OUTPUT2"_bwt"
+./compute_distance $OUTPUT1 $OUTPUT2
+rm $OUTPUT1.bitvector.bin
 rm eds_number.aux
 
 #funzione che costruisce l'albero filogenetico in base alla matrice distanze (nome funzione non definitivo)

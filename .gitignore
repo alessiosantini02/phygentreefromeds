@@ -10,6 +10,7 @@ compute_gda
 fasta_bv_concat
 compute_distance_gda_run
 compute_distance_bwt_run
+compute_distance
 
 preceding_dollars_finder_new.cpp
 

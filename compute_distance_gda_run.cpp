@@ -14,6 +14,21 @@ int main(int argc, char* argv[]){
     fread(&eds_number, sizeof(int), 1, eds_number_file);
     fclose(eds_number_file);
 
+#if (DOLLAR_COUNT==0)
+    //apertura file con le dimensioni scritte
+    string eds_dim_filename=argv[1];
+    FILE *sizes = fopen((eds_dim_filename+".bitvector.bin").c_str(), "rb");
+    
+    //scorrimento del file e salvataggio degli interi in un array
+    int eds_sizes;
+    int temp;
+    while (fread(&temp, sizeof(int), 1, sizes) > 0)
+    {
+        eds_sizes+=temp;
+    }
+    fclose(sizes);
+#endif
+
     //inzializzazione matrice distanze
     vector<vector<double>> distance_matrix(eds_number, vector<double>(eds_number));
     
@@ -38,11 +53,21 @@ int main(int argc, char* argv[]){
                 int current_string=0; //0 solo all'inizio, 1 se sta contando un run della stringa i, 2 se j
 
                 int eds_index_temp;
+
+                #if DOLLAR_COUNT==0
+                    int k=0;
+                #endif
+
                 while (fread(&eds_index_temp, sizeof(int), 1, gda_file) > 0)
                 {
                     //lettura di un altro elemento per buttarlo via perchè il GDA è memorizzato come sequenza di interi in binario, non è strutturato a coppie
                     int bin;
                     fread(&bin, sizeof(int), 1, gda_file);
+
+                    #if DOLLAR_COUNT==0
+                        if (k>eds_sizes)
+                        {
+                    #endif
 
                     //controllo il valore del GDA per controllare se fa parte del run corrente o inizia un nuovo run
                     if (eds_index_temp == i)
@@ -70,6 +95,11 @@ int main(int argc, char* argv[]){
                         }
                         symbols_number++;
                     }
+
+                    #if DOLLAR_COUNT==0
+                        }
+                        k++;
+                    #endif
                 }
 
                 rewind(gda_file);
@@ -102,8 +132,10 @@ int main(int argc, char* argv[]){
     ofstream phylip_file((name_distance_matrix_file+".phy").c_str());
     phylip_file << distance_matrix.size() << "\n"; //numero di elementi
 
+    string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H", "20I", "20J", "21A", "21B", "21C", "21D", "21F", "21G", "21H", "21I", "21J", "21K", "21L", "22A", "22B", "22C", "22D", "22E", "22F", "23A", "23B"};
+
     for (size_t i = 0; i < distance_matrix.size(); i++) {
-        phylip_file << "E" << i << "  ";
+        phylip_file <<  variants_name[i]/*"E" << i */<< "  ";
         for (double d : distance_matrix[i]) {
             phylip_file << d << "  ";
         }
