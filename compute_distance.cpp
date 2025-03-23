@@ -117,6 +117,9 @@ int main(int argc, char* argv[]){
                     //DISTANZA SUI RUN DELLA BWT
                     #if DOLLAR_INTO_PREVIOUS_RUN==1
                     if (bwt_symbol_buffer == previous_symbol || bwt_symbol_buffer=='#')
+                    //fare caso in cui cè un run di dollari all'inizio
+                    {
+                        if(previous_symbol != 'b' && bwt_symbol_buffer=='#')
                     #else
                     if (bwt_symbol_buffer == previous_symbol)
                     #endif
@@ -137,6 +140,9 @@ int main(int argc, char* argv[]){
                         gda_difference=0;
                         previous_symbol=bwt_symbol_buffer;
                     }
+                    #if DOLLAR_INTO_PREVIOUS_RUN==1
+                    }
+                    #endif
 
             #if (DOLLAR_COUNT==0)
                 }
