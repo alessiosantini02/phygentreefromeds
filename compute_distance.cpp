@@ -7,10 +7,12 @@
 
 using namespace std;
 
+void calcolo_distanza_gda(int i, int j, vector<vector<double>> &distance_matrix_gda, vector<int> gda, int eds_sizes);
+void calcolo_distanza_bwt(int i, int j, vector<vector<double>> &distance_matrix_bwt, vector<int> gda, vector<char> bwt, int eds_sizes);
 void normalizza_matrice_distanze(vector<vector<double>> &distance_matrix);
 void print_distance_matrix(vector<vector<double>> distance_matrix);
 void store_distance_matrix_on_phylip_file(vector<vector<double>> distance_matrix, string name_distance_matrix_file);
-void print_as_list (vector<vector<double>> distance_matrix_bwt, vector<vector<double>> distance_matrix_gda);
+void print_as_list (vector<vector<double>> distance_matrix);
 
 int main(int argc, char* argv[]){
 
@@ -36,8 +38,10 @@ int main(int argc, char* argv[]){
 #endif
 
     //inzializzazione matrici distanze
-    vector<vector<double>> distance_matrix_gda(eds_number, vector<double>(eds_number));
-    vector<vector<double>> distance_matrix_bwt(eds_number, vector<double>(eds_number));
+    vector<vector<double>> distance_matrix_gda(eds_number, vector<double>(eds_number, 0.0));
+    vector<vector<double>> distance_matrix_bwt(eds_number, vector<double>(eds_number, 0.0));
+    fill(distance_matrix_gda.begin(), distance_matrix_gda.end(), vector<double>(eds_number, 0.0));
+    fill(distance_matrix_bwt.begin(), distance_matrix_bwt.end(), vector<double>(eds_number, 0.0));
 
     //apertura file GDA e BWT e salvataggio in array
     string filename = argv[1];
@@ -73,102 +77,122 @@ int main(int argc, char* argv[]){
                 distance_matrix_bwt[i][j] = 0;
             }else if (i>j)
             {
-                //variabili per la distanza sul gda
-                int current_run_counter=1; //contatore per la lunghezza del run attuale, inizializzato a 1 così alla prima iterazione viene aggiunto al contatore 1-1=0
-                int current_string=0; //0 solo all'inizio, 1 se sta contando un run della stringa i, 2 se j
-                int symbols_number=0;
+                calcolo_distanza_gda(i,j, distance_matrix_gda, gda, eds_sizes);
+                calcolo_distanza_bwt(i,j,distance_matrix_bwt, gda, bwt, eds_sizes);
+            }
+        }
+    }
 
-                //variabili per la distanza sulla bwt
-                char previous_symbol='b'; //per vedere se il carattere corrente appartiene allo stesso run di prima, inizializzo con un carattere non nell'alfabeto
-                int gda_difference=0; //contatore cumulativo su cui si fa +1 o -1 in base al valore del gda
-                int symbols_counter=0; //per la normalizzazione
-                int distance_counter=0; //contatore della distanza fra la EDS i e la j
+    normalizza_matrice_distanze(distance_matrix_bwt);
+    normalizza_matrice_distanze(distance_matrix_gda);
+    
+    cout<<"inizio matrice bwt"<<endl;
+    print_distance_matrix(distance_matrix_bwt);
+    print_as_list(distance_matrix_bwt);
+    cout<<endl;
 
-                #if (DOLLAR_COUNT==0)
-                    int k=0;
-                #endif
-                
-                int counter=0;
-                for(counter=0; counter<bwt.size(); counter++)
-                {
-                #if (DOLLAR_COUNT==0)
-                    if (k>eds_sizes)
-                    {
-                #endif
+    cout<<"inizio matrice gda"<<endl;
+    print_distance_matrix(distance_matrix_gda);
+    print_as_list(distance_matrix_gda);
+    cout<<endl;
 
-                    //DISTANZA SUI RUN DEL GDA
-                    //controllo il valore del GDA per controllare se fa parte del run corrente o inizia un nuovo run
-                    if (gda[counter] == i)
-                    {
-                        if (current_string != 1)
-                        {
-                            distance_matrix_gda[i][j] += current_run_counter-1;
-                            current_string = 1;
-                            current_run_counter = 1;
-                        }else
-                        {
-                            current_run_counter++;
-                        }
-                        symbols_number++;
-                    }else if (gda[counter] == j)
-                    {
-                        if (current_string != 2)
-                        {
-                            distance_matrix_gda[i][j] += current_run_counter-1;
-                            current_string = 2;
-                            current_run_counter = 1;
-                        }else
-                        {
-                            current_run_counter++;
-                        }
-                        symbols_number++;
-                    }
+    //salvataggio della matrice in phylip per il momento, poi aggiungere opzione per csv
+    string name_distance_matrix_file = argv[2];
+    store_distance_matrix_on_phylip_file(distance_matrix_bwt, name_distance_matrix_file+"_bwt");
+    store_distance_matrix_on_phylip_file(distance_matrix_gda, name_distance_matrix_file+"_gda");
 
+    return 0;
+}
 
-                    //DISTANZA SUI RUN DELLA BWT
-                    #if DOLLAR_INTO_PREVIOUS_RUN==1
-                    if (bwt[counter] == previous_symbol || (previous_symbol != 'b' && bwt[counter]=='#'))
-                    #else
-                    if (bwt[counter] == previous_symbol)
-                    #endif
-                    {                 
-                        //guardo il valore del gda, se è i o j faccio +1 su un contatore cumulativo
-                        if (gda[counter] == i)
-                        {
-                            gda_difference++;
-                            symbols_counter++;
-                        }else if (gda[counter] == j)
-                        {
-                            gda_difference--;
-                            symbols_counter++;
-                        }
-                    }else
-                    {
-                        distance_matrix_bwt[i][j]+=abs(gda_difference);
-                        gda_difference=0;
-                        previous_symbol=bwt[counter];
-                    }
-                    #if DOLLAR_INTO_PREVIOUS_RUN==1
-                    //}
-                    #endif
+void calcolo_distanza_gda(int i, int j, vector<vector<double>> &distance_matrix_gda, vector<int> gda, int eds_sizes){
+    //variabili per la distanza sul gda
+    int current_run_counter=1; //contatore per la lunghezza del run attuale, inizializzato a 1 così alla prima iterazione viene aggiunto al contatore 1-1=0
+    int current_string=0; //0 solo all'inizio, 1 se sta contando un run della stringa i, 2 se j
+    int symbols_number=0;
 
-            #if (DOLLAR_COUNT==0)
-                }
-                k++;
+    
+    #if (DOLLAR_COUNT==0)
+        int k=0;
+    #endif
+    
+    int counter=0;
+    for(counter=0; counter<gda.size(); counter++)
+    {
+    #if (DOLLAR_COUNT==0)
+        if (k>eds_sizes)
+        {
+    #endif
+
+        //DISTANZA SUI RUN DEL GDA
+        //controllo il valore del GDA per controllare se fa parte del run corrente o inizia un nuovo run
+        if (gda[counter] == i)
+        {
+            if (current_string != 1)
+            {
+                distance_matrix_gda[i][j] += current_run_counter-1;
+                current_string = 1;
+                current_run_counter = 1;
+            }else
+            {
+                current_run_counter++;
+            }
+            symbols_number++;
+        }else if (gda[counter] == j)
+        {
+            if (current_string != 2)
+            {
+                distance_matrix_gda[i][j] += current_run_counter-1;
+                current_string = 2;
+                current_run_counter = 1;
+            }else
+            {
+                current_run_counter++;
+            }
+            symbols_number++;
+        }
+
+#if (DOLLAR_COUNT==0)
+    }
+    k++;
+#endif
+    }
+
+    //conteggio dell'ultimo run del gda
+    if (gda[counter] == i || gda[counter] == j)
+    {
+        distance_matrix_gda[i][j] += current_run_counter-1;
+    }
+
+    //distance_matrix_gda[i][j] = distance_matrix_gda[i][j] / symbols_number; //normalizzazione per la somma
+    distance_matrix_gda[j][i] = distance_matrix_gda[i][j]; //per completare la matrice che è simmetrica
+}
+
+void calcolo_distanza_bwt(int i, int j, vector<vector<double>> &distance_matrix_bwt, vector<int> gda, vector<char> bwt, int eds_sizes){
+    //variabili per la distanza sulla bwt
+    char previous_symbol='b'; //per vedere se il carattere corrente appartiene allo stesso run di prima, inizializzo con un carattere non nell'alfabeto
+    int gda_difference=0; //contatore cumulativo su cui si fa +1 o -1 in base al valore del gda
+    int symbols_counter=0; //per la normalizzazione
+    int distance_counter=0; //contatore della distanza fra la EDS i e la j
+
+    #if (DOLLAR_COUNT==0)
+        int k=0;
+    #endif
+    
+    int counter=0;
+    for(counter=0; counter<bwt.size(); counter++)
+    {
+    #if (DOLLAR_COUNT==0)
+        if (k>eds_sizes)
+        {
+    #endif
+        //DISTANZA SUI RUN DELLA BWT
+        if((gda[counter]==i || gda[counter]==j)){
+            #if DOLLAR_INTO_PREVIOUS_RUN==1
+            if (bwt[counter] == previous_symbol || (previous_symbol != 'b' && bwt[counter]=='#'))
+            #else
+            if (bwt[counter] == previous_symbol)
             #endif
-                }
-
-                //GDA
-                if (gda[counter] == i || gda[counter] == j)
-                {
-                    distance_matrix_gda[i][j] += current_run_counter-1;// conteggio dell'ultimo run del gda
-                }
-
-                //distance_matrix_gda[i][j] = distance_matrix_gda[i][j] / symbols_number; //normalizzazione per la somma
-                distance_matrix_gda[j][i] = distance_matrix_gda[i][j]; //per completare la matrice che è simmetrica
-
-                //BWT
-                //conteggio ultimo run
+            {                 
                 //guardo il valore del gda, se è i o j faccio +1 su un contatore cumulativo
                 if (gda[counter] == i)
                 {
@@ -179,36 +203,39 @@ int main(int argc, char* argv[]){
                     gda_difference--;
                     symbols_counter++;
                 }
+            }else
+            {
                 distance_matrix_bwt[i][j]+=abs(gda_difference);
-                
-                //inserimento distanza fra EDS i e EDS j nella matrice
-                //distance_matrix_bwt[i][j]/=symbols_counter;
-                distance_matrix_bwt[j][i]=distance_matrix_bwt[i][j];
-
+                gda_difference=0;
+                previous_symbol=bwt[counter];
             }
         }
+    #if (DOLLAR_COUNT==0)
+    }
+    k++;
+    #endif
     }
 
-    normalizza_matrice_distanze(distance_matrix_bwt);
-    normalizza_matrice_distanze(distance_matrix_gda);
+    //conteggio ultimo run
+    //guardo il valore del gda, se è i o j faccio +1 su un contatore cumulativo
+    if (gda[counter] == i)
+    {
+        gda_difference++;
+        symbols_counter++;
+    }else if (gda[counter] == j)
+    {
+        gda_difference--;
+        symbols_counter++;
+    }
+    distance_matrix_bwt[i][j]+=abs(gda_difference);
     
-    print_distance_matrix(distance_matrix_gda);
-    cout<<endl;
-    print_distance_matrix(distance_matrix_bwt);
-
-    //salvataggio della matrice in phylip per il momento, poi aggiungere opzione per csv
-    string name_distance_matrix_file = argv[2];
-    store_distance_matrix_on_phylip_file(distance_matrix_bwt, name_distance_matrix_file+"_bwt");
-    store_distance_matrix_on_phylip_file(distance_matrix_gda, name_distance_matrix_file+"_gda");
-
-    print_as_list(distance_matrix_bwt, distance_matrix_gda);
-
-    return 0;
+    //inserimento distanza fra EDS i e EDS j nella matrice
+    //distance_matrix_bwt[i][j]/=symbols_counter;
+    distance_matrix_bwt[j][i]=distance_matrix_bwt[i][j];
 }
 
 void normalizza_matrice_distanze(vector<vector<double>> &distance_matrix){
     double max=0;
-    double min=std::numeric_limits<double>::max();
     
     for (size_t i = 0; i < distance_matrix.size(); i++)
     {
@@ -217,10 +244,7 @@ void normalizza_matrice_distanze(vector<vector<double>> &distance_matrix){
             if (distance_matrix[i][j]>max)
             {
                 max=distance_matrix[i][j];
-            }else if (distance_matrix[i][j]<min)
-            {
-                min=distance_matrix[i][j];
-            }   
+            }
         }
     }
 
@@ -228,38 +252,26 @@ void normalizza_matrice_distanze(vector<vector<double>> &distance_matrix){
     {
         for (size_t j = 0; j<i; j++)
         {
-            distance_matrix[i][j]=(distance_matrix[i][j]-min) / (max -min);
+            distance_matrix[i][j]=(distance_matrix[i][j]) / (max);
             distance_matrix[j][i]=distance_matrix[i][j];
         }
     }
 }
 
-void print_as_list(vector<vector<double>> distance_matrix_bwt, vector<vector<double>>distance_matrix_gda){
-    string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H (Beta)", "20I (Alpha)", "20J (Gamma)", "21A (Delta)", "21B (Kappa)", "21C (Epsilon)", "21D (Eta)",
+void print_as_list(vector<vector<double>> distance_matrix){
+    /*string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H (Beta)", "20I (Alpha)", "20J (Gamma)", "21A (Delta)", "21B (Kappa)", "21C (Epsilon)", "21D (Eta)",
      "21F (Iota)", "21G (Lambda)", "21H (Mu)", "21I (Delta)", "21J (Delta)", "21K (BA.1)",
       "21L (BA.2)", "22A (BA.4)", "22B (BA.5)", "22C (BA.2.12.1)", "22D (BA.2.75)", "22E (BQ.1)", "22F (XBB)", "23A (XBB.1.5)", "23B (XBB.1.16)"};
-    cout<<"inizio matrice bwt"<<endl;
-
-    for (size_t i = 0; i < distance_matrix_bwt.size(); i++)
+    */
+    string variants_name[31]={"19A", "19B", "21A (Delta)", "21I (Delta)", "21J (Delta)"};
+    
+    for (size_t i = 0; i < distance_matrix.size(); i++)
     {
         for (size_t j = 0; j < i; j++)
         {
             string nodo1=variants_name[i];
             string nodo2=variants_name[j];
-            double distance=distance_matrix_bwt[i][j];
-            cout<<"('"<<nodo1<<"','"<<nodo2<<"',"<<distance<<"),"<<endl;
-        }
-    }
-
-    cout<<"inizio matrice gda"<<endl;
-
-    for (size_t i = 0; i < distance_matrix_gda.size(); i++)
-    {
-        for (size_t j = 0; j < i; j++)
-        {
-            string nodo1=variants_name[i];
-            string nodo2=variants_name[j];
-            double distance=distance_matrix_gda[i][j];
+            double distance=distance_matrix[i][j];
             cout<<"('"<<nodo1<<"','"<<nodo2<<"',"<<distance<<"),"<<endl;
         }
     }

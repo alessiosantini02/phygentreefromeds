@@ -7,7 +7,9 @@
 
 using namespace std;
 void print_distance_matrix(vector<vector<double>> distance_matrix);
-void print_as_list(vector<vector<double>>distance_matrix_gda);
+void print_as_list(vector<vector<double>>distance_matrix);
+void store_distance_matrix_on_phylip_file(vector<vector<double>> distance_matrix, string name_distance_matrix_file);
+void normalizza_matrice_distanze(vector<vector<double>> &distance_matrix);
 
 int main(int argc, char* argv[]){
     //lettura del numero di EDS da un file ausiliario
@@ -16,8 +18,9 @@ int main(int argc, char* argv[]){
     fread(&eds_number, sizeof(int), 1, eds_number_file);
     fclose(eds_number_file);
 
-    //inzializzazione matrici distanze
-    vector<vector<double>> distance_matrix_gda(eds_number, vector<double>(eds_number));
+    //inzializzazione matrice distanze
+    vector<vector<double>> distance_matrix_gda(eds_number, vector<double>(eds_number, 0.0));
+    fill(distance_matrix_gda.begin(), distance_matrix_gda.end(), vector<double>(eds_number, 0.0));
 
     //apertura file PDA e caricamento in un array
     string filename = argv[1];
@@ -33,10 +36,12 @@ int main(int argc, char* argv[]){
         pda.push_back(temp);
     }
 
-    string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H (Beta)", "20I (Alpha)", "20J (Gamma)", "21A (Delta)", "21B (Kappa)", "21C (Epsilon)", "21D (Eta)",
+    /*string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H (Beta)", "20I (Alpha)", "20J (Gamma)", "21A (Delta)", "21B (Kappa)", "21C (Epsilon)", "21D (Eta)",
      "21F (Iota)", "21G (Lambda)", "21H (Mu)", "21I (Delta)", "21J (Delta)", "21K (BA.1)",
       "21L (BA.2)", "22A (BA.4)", "22B (BA.5)", "22C (BA.2.12.1)", "22D (BA.2.75)", "22E (BQ.1)", "22F (XBB)", "23A (XBB.1.5)", "23B (XBB.1.16)"};
-    
+*/
+    string variants_name[31]={"19A", "19B", "21A (Delta)", "21I (Delta)", "21J (Delta)"};
+
     //scorrimento del triangolo inferiore delle matrici per calcolare le distanze a due a due
     for (size_t i = 0; i < eds_number; i++)
     {
@@ -122,37 +127,14 @@ int main(int argc, char* argv[]){
     }
 
     fclose(gda_file);
-
-    //normalizzazione
-    double max=0;
-    double min=std::numeric_limits<double>::max();
     
-    for (size_t i = 0; i < distance_matrix_gda.size(); i++)
-    {
-        for (size_t j = 0; j<i; j++)
-        {
-            if (distance_matrix_gda[i][j]>max)
-            {
-                max=distance_matrix_gda[i][j];
-            }else if (distance_matrix_gda[i][j]<min)
-            {
-                min=distance_matrix_gda[i][j];
-            }   
-        }
-    }
-    cout<<"massimo: "<<max<<" minimo: "<<min<<endl;
+    normalizza_matrice_distanze(distance_matrix_gda);
 
-    for (size_t i = 0; i < distance_matrix_gda.size(); i++)
-    {
-        for (size_t j = 0; j<i; j++)
-        {
-            distance_matrix_gda[i][j]= ((distance_matrix_gda[i][j]-min) / (max -min));
-            distance_matrix_gda[j][i]=distance_matrix_gda[i][j];
-        }
-    }
-
+    cout<<"Matrice PDA-SAP"<<endl;
     print_distance_matrix(distance_matrix_gda);
     print_as_list(distance_matrix_gda);
+
+    store_distance_matrix_on_phylip_file(distance_matrix_gda, "risultati/distance_matrix_pda_sap");
 
     return 0;
 }
@@ -168,20 +150,63 @@ void print_distance_matrix(vector<vector<double>> distance_matrix){
     }
 }
 
-void print_as_list(vector<vector<double>>distance_matrix_gda){
-    string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H (Beta)", "20I (Alpha)", "20J (Gamma)", "21A (Delta)", "21B (Kappa)", "21C (Epsilon)", "21D (Eta)",
+void print_as_list(vector<vector<double>>distance_matrix){
+    /*string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H (Beta)", "20I (Alpha)", "20J (Gamma)", "21A (Delta)", "21B (Kappa)", "21C (Epsilon)", "21D (Eta)",
      "21F (Iota)", "21G (Lambda)", "21H (Mu)", "21I (Delta)", "21J (Delta)", "21K (BA.1)",
       "21L (BA.2)", "22A (BA.4)", "22B (BA.5)", "22C (BA.2.12.1)", "22D (BA.2.75)", "22E (BQ.1)", "22F (XBB)", "23A (XBB.1.5)", "23B (XBB.1.16)"};
-
-    for (size_t i = 0; i < distance_matrix_gda.size(); i++)
+*/
+    string variants_name[31]={"19A", "19B", "21A (Delta)", "21I (Delta)", "21J (Delta)"};
+    
+    for (size_t i = 0; i < distance_matrix.size(); i++)
     {
         for (size_t j = 0; j < i; j++)
         {
             string nodo1=variants_name[i];
             string nodo2=variants_name[j];
-            double distance=distance_matrix_gda[i][j];
+            double distance=distance_matrix[i][j];
             cout<<"('"<<nodo1<<"','"<<nodo2<<"',"<<distance<<"),"<<endl;
         }
     }
     
+}
+
+void store_distance_matrix_on_phylip_file(vector<vector<double>> distance_matrix, string name_distance_matrix_file){
+    ofstream phylip_file((name_distance_matrix_file+".phy").c_str());
+    phylip_file << distance_matrix.size() << "\n"; //numero di elementi
+
+    string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H", "20I", "20J", "21A", "21B", "21C", "21D", "21F", "21G", "21H", "21I", "21J", "21K", "21L", "22A", "22B", "22C", "22D", "22E", "22F", "23A", "23B"};
+
+    for (size_t i = 0; i < distance_matrix.size(); i++) {
+        phylip_file <<  variants_name[i]/*"E" << i */<< "  ";
+        for (double d : distance_matrix[i]) {
+            phylip_file << d << "  ";
+        }
+        phylip_file << "\n";
+    }
+
+    phylip_file.close();
+}
+
+void normalizza_matrice_distanze(vector<vector<double>> &distance_matrix){
+    double max=0;
+    
+    for (size_t i = 0; i < distance_matrix.size(); i++)
+    {
+        for (size_t j = 0; j<i; j++)
+        {
+            if (distance_matrix[i][j]>max)
+            {
+                max=distance_matrix[i][j];
+            }
+        }
+    }
+
+    for (size_t i = 0; i < distance_matrix.size(); i++)
+    {
+        for (size_t j = 0; j<i; j++)
+        {
+            distance_matrix[i][j]=(distance_matrix[i][j]) / (max);
+            distance_matrix[j][i]=distance_matrix[i][j];
+        }
+    }
 }
