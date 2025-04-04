@@ -36,11 +36,11 @@ int main(int argc, char* argv[]){
         pda.push_back(temp);
     }
 
-    /*string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H (Beta)", "20I (Alpha)", "20J (Gamma)", "21A (Delta)", "21B (Kappa)", "21C (Epsilon)", "21D (Eta)",
+    string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H (Beta)", "20I (Alpha)", "20J (Gamma)", "21A (Delta)", "21B (Kappa)", "21C (Epsilon)", "21D (Eta)",
      "21F (Iota)", "21G (Lambda)", "21H (Mu)", "21I (Delta)", "21J (Delta)", "21K (BA.1)",
       "21L (BA.2)", "22A (BA.4)", "22B (BA.5)", "22C (BA.2.12.1)", "22D (BA.2.75)", "22E (BQ.1)", "22F (XBB)", "23A (XBB.1.5)", "23B (XBB.1.16)"};
-*/
-    string variants_name[31]={"19A", "19B", "21A (Delta)", "21I (Delta)", "21J (Delta)"};
+
+    //string variants_name[31]={"19A", "19B", "21A (Delta)", "21I (Delta)", "21J (Delta)"};
 
     //scorrimento del triangolo inferiore delle matrici per calcolare le distanze a due a due
     for (size_t i = 0; i < eds_number; i++)
@@ -64,6 +64,7 @@ int main(int argc, char* argv[]){
                 saparray.push_back(current_sap_value);
             }
 
+            //proiezione del PDA per scorrerlo insieme al SAP array
             vector<int> pda_projected;
             for (size_t k = 0; k < pda.size(); k++)
             {
@@ -142,20 +143,21 @@ int main(int argc, char* argv[]){
 void print_distance_matrix(vector<vector<double>> distance_matrix){
     for (size_t i = 0; i < distance_matrix.size(); i++)
     {
+        cout<<"[";
         for (size_t j = 0; j < distance_matrix.size(); j++)
         {
-            cout << distance_matrix[i][j]<< " ";
+            cout << distance_matrix[i][j]<< ", ";
         }
-        cout << endl;
+        cout <<"]," <<endl;
     }
 }
 
 void print_as_list(vector<vector<double>>distance_matrix){
-    /*string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H (Beta)", "20I (Alpha)", "20J (Gamma)", "21A (Delta)", "21B (Kappa)", "21C (Epsilon)", "21D (Eta)",
+    string variants_name[31]={"19A", "19B", "20A", "20B", "20C", "20D", "20E", "20F", "20G", "20H (Beta)", "20I (Alpha)", "20J (Gamma)", "21A (Delta)", "21B (Kappa)", "21C (Epsilon)", "21D (Eta)",
      "21F (Iota)", "21G (Lambda)", "21H (Mu)", "21I (Delta)", "21J (Delta)", "21K (BA.1)",
       "21L (BA.2)", "22A (BA.4)", "22B (BA.5)", "22C (BA.2.12.1)", "22D (BA.2.75)", "22E (BQ.1)", "22F (XBB)", "23A (XBB.1.5)", "23B (XBB.1.16)"};
-*/
-    string variants_name[31]={"19A", "19B", "21A (Delta)", "21I (Delta)", "21J (Delta)"};
+
+    //string variants_name[31]={"19A", "19B", "21A (Delta)", "21I (Delta)", "21J (Delta)"};
     
     for (size_t i = 0; i < distance_matrix.size(); i++)
     {

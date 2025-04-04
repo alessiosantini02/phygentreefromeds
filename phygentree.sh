@@ -34,6 +34,6 @@ rm $OUTPUT1.bitvector.bin
 rm eds_number.aux
 
 #funzione che costruisce l'albero filogenetico in base alla matrice distanze (nome funzione non definitivo)
-#./neighbour_join $OUTPUT2 $OUTPUT3
-#./rapidnj $OUTPUT2"_gda".phy > $OUTPUT3"_fromgda".txt
-#./rapidnj $OUTPUT2"_bwt".phy > $OUTPUT3"_frombwt".txt
+./rapidnj $OUTPUT2"_gda".phy > $OUTPUT3"_fromgda".txt
+./rapidnj $OUTPUT2"_bwt".phy > $OUTPUT3"_frombwt".txt
+./rapidnj $OUTPUT2"_pda_sap".phy > $OUTPUT3"_frompdasap".txt
