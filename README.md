@@ -73,3 +73,11 @@ cd EDS-BWT/
 ./stringCheck input.eds output
 ```
 It will correct the EDS file and will save it as output.eds
+
+# Improvements
+
+Here's a list of things that could be improved by anyone who will use this tool:
+
+- Files are read one symbol at a time, it could be optimized by reading blocks;
+- names of species in distance matrixes are specified in code, defining an array named variants_name, it could be passed as argument;
+- in functions compute_distance and compute_distance_sap should be added a case for N characters, that is considered as a normal symbol of the alphabet, so if two sequences present an N in the same position they are considered equal in that position, and this is wrong in general.
